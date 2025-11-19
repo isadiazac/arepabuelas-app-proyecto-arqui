@@ -25,7 +25,7 @@ describe('Flujos de pruebas - Arepabuelas', () => {
     cy.get('input[placeholder="Contraseña"]').type('incorrecto');
     cy.get('button').contains('Iniciar Sesión').click();
 
-    cy.contains('Credenciales inválidas'); // Ajusta según tu mensaje real
+    cy.contains('Usuario no encontrado'); // Ajusta según tu mensaje real
   });
 
   it('debería mostrar la vista del menú tras iniciar sesión', () => {
@@ -35,8 +35,19 @@ describe('Flujos de pruebas - Arepabuelas', () => {
   });
 
   it('debería cerrar sesión correctamente', () => {
-    cy.login('admin@arepabuelas.com', 'admin123');
-    cy.get('button').contains('Cerrar Sesión').click();
-    cy.url().should('include', '/login');
-  });
+  cy.login('admin@arepabuelas.com', 'admin123');
+
+  // Confirmamos que estamos en el menú
+  cy.url().should('include', '/menu');
+  cy.contains('Menú');
+
+  // Hacemos clic en el botón de logout (es un <a> con href='/login')
+  cy.get('a[href="/login"]').click();
+
+  // Verificamos que redirige correctamente
+  cy.url().should('eq', 'http://localhost:3000/login');
+  cy.contains('Iniciar Sesión'); // Ajusta según el texto visible en login
 });
+});
+
+
