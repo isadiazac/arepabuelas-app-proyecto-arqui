@@ -327,6 +327,13 @@ POST /api/auth/login devuelve 200 + token válido
 
 ---
 
+## Pipeline CI/CD ― Descripción General
+
+Este proyecto integra un **pipeline completo de CI/CD** mediante **GitHub Actions**, el cual se ejecuta automáticamente en cada *push* o *pull request*. El pipeline valida la calidad del software asegurando que el backend funcione correctamente antes de cualquier despliegue.
+Durante la ejecución, el workflow realiza las siguientes tareas: instala dependencias, levanta un entorno aislado con PostgreSQL, ejecuta todas las **pruebas unitarias e integración con Jest**, corre la **colección de Postman con Newman** para validar las APIs, y realiza análisis automatizados de seguridad y calidad. Esta automatización garantiza que cada cambio en el proyecto sea verificado de manera consistente, reduciendo errores, asegurando la estabilidad del sistema y permitiendo un proceso de desarrollo más confiable y profesional.
+
+---
+
 # **Conclusión**
 
 El proyecto cuenta con una suite sólida de **10 pruebas unitarias y 10 de integración, además de las E2E y de seguridad**, que cubren:
