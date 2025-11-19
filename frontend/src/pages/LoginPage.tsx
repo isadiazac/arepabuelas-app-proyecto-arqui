@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode"; // <-- 1. Importar la función jwtDecode como exportación nombrada
+import { jwtDecode } from "jwt-decode";
 import "./LoginPage.css";
 import logo from "../assets/logo-blanco.png";
 
