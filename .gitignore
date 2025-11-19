@@ -5,7 +5,7 @@ backend/.env
 # Dependencias
 node_modules/
 logs/
-tests/
+
 
 # Archivos temporales
 .DS_Store
