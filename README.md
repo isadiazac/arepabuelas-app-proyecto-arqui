@@ -1,5 +1,7 @@
-# **Estrategia de Pruebas del Backend (Arepabuelas App)**
-### Isabel Díaz Acosta, Pablo Boada, Ana Maria Cordero
+# **Estrategia de Pruebas (Arepabuelas App)**
+### Isabela Díaz Acosta, Pablo Boada, Ana Maria Cordero
+---
+## Backend:
 
 Este repositorio cuenta con una estrategia completa de pruebas implementada para el backend del proyecto **Arepabuelas App**.
 Se desarrollaron **pruebas automatizadas**, entre **unitarias** e **integración**, usando Jest + Supertest, mock de base de datos, y aislamiento total de dependencias externas.
@@ -17,6 +19,10 @@ Se desarrollaron **pruebas automatizadas**, entre **unitarias** e **integración
 | **Node.js + Express** | Backend probado                                        |
 
 ---
+## Colección de postman
+[Postman](https://isadiac06-8447466.postman.co/workspace/Isabela-D%C3%ADaz-Acosta's-Workspace~9e2b66f0-0753-4365-8205-f3c81aec62b1/collection/48860550-e967a387-b7dd-44cf-b591-bfc1b698fbda?action=share&creator=48860550)
+
+---
 
 # **Arquitectura de pruebas**
 
@@ -32,7 +38,60 @@ backend/
  ├── jest.config.js
  └── package.json
 ```
+## Diagrama de flujo de las pruebas realizadas
+```
+                    ┌────────────────────┐
+                    │    INICIO TESTS    │
+                    └─────────┬──────────┘
+                              │
+                              ▼
+                 ┌─────────────────────────┐
+                 │ Cargar setupTests.js    │
+                 │ - Mock multer           │
+                 │ - Definir JWT_SECRET    │
+                 └───────────┬─────────────┘
+                              │
+                              ▼
+                 ┌─────────────────────────┐
+                 │  Mockear Base de Datos  │
+                 │  pool.query = jest.fn() │
+                 └───────────┬─────────────┘
+                              │
+                              ▼
+                    ┌──────────────────┐
+                    │ Cargar la App    │
+                    │ (createTestApp)  │
+                    └───────┬──────────┘
+                            │
+                            ▼
+        ┌───────────────────────────────────────────┐
+        │       EJECUTAR TESTS UNITARIOS             │
+        │  - Middlewares                             │
+        │  - Sanitización                             │
+        │  - Modelos (db mock)                       │
+        └───────────────┬───────────────────────────┘
+                        │
+                        ▼
+        ┌───────────────────────────────────────────┐
+        │        EJECUTAR TESTS DE INTEGRACIÓN       │
+        │  - Simular peticiones HTTP con Supertest   │
+        │  - Validar rutas + controladores           │
+        │  - BD mockeada responde                    │
+        └───────────────┬───────────────────────────┘
+                        │
+                        ▼
+                 ┌────────────────────────┐
+                 │   Validar resultados   │
+                 │  (status, body, flujo) │
+                 └───────────┬────────────┘
+                             │
+                             ▼
+                    ┌──────────────────┐
+                    │   TODOS PASAN    │
+                    └──────────────────┘
+```
 
+---
 ### setupTests.js
 
 Mockea dependencias globales:
@@ -146,6 +205,101 @@ Se desarrollaron **20 pruebas**, divididas de la siguiente manera:
 *(algunos ya listados arriba)*
 
 ---
+# **EXPLICACIÓN CORTA DE CADA TEST**
+---
+
+## **PRUEBAS UNITARIAS (10 tests)**
+
+### **1. verifyToken – rechazo sin token**
+
+Valida que el middleware responda 401 si no recibe encabezado Authorization.
+
+### **2. validateRegister – email inválido**
+
+Si el usuario intenta registrarse con un email incorrecto → retorna 400.
+
+### **3. authMiddleware – token válido**
+
+Decodifica un token JWT y mete el usuario en `req.user`.
+
+### **4. isAdmin – bloquea usuario normal**
+
+Middleware comprueba si `req.user.is_admin !== true`; si lo es → 403.
+
+### **5. productModel – obtener producto por ID**
+
+Mockea la BD y asegura que `getProductById(id)` devuelve un objeto válido.
+
+### **6. auditLogger – escribe logs correctamente**
+
+Mockea fs y valida que el logger escribe en archivo sin fallar.
+
+### **7. sanitize – filtra contenido malicioso**
+
+Limpia scripts o tags dañinas en la entrada del usuario.
+
+### **8. commentModel – crear comentario**
+
+Mockea la BD y asegura que se inserta un comentario correctamente.
+
+### **9. findByEmail – usuario existente**
+
+Devuelve un usuario simulado desde la BD (pool.query mock).
+
+### **10. createUser – creación exitosa**
+
+Simula inserción y asegura que un usuario nuevo se guarda correctamente.
+
+---
+
+## **PRUEBAS DE INTEGRACIÓN (10 tests)**
+
+Estas pruebas validan RUTAS completas usando Supertest.
+
+---
+
+### **11. registerFail – email inválido / falta info**
+
+Envía un POST /api/auth/register con datos inválidos y recibe 400.
+
+### **12. productsList – listar productos**
+
+GET /api/products devuelve una lista correcta desde la BD mock.
+
+### **13. productById – obtener producto específico**
+
+GET /api/products/:id devuelve el producto esperado.
+
+### **14. pendingUsers – listar usuarios pendientes (admin)**
+
+PATCH /api/users/pending devuelve la lista (BD mock).
+
+### **15. payOrder – proceso de pago simulado**
+
+POST /api/orders/pay retorna “orden pagada” usando BD mock.
+
+### **16. orderCreate – crear orden**
+
+POST /api/orders crea una orden con items y responde 201.
+
+### **17. commentCreate – crear comentario**
+
+POST /api/comments/:productId almacena el comentario.
+
+### **18. getUserOrders – historial del usuario**
+
+GET /api/orders devuelve las órdenes del usuario autenticado.
+
+### **19. approveUser – aprobar usuario**
+
+PATCH /api/users/:id/approve actualiza el estado del usuario.
+
+### **20. login – login exitoso**
+
+POST /api/auth/login devuelve 200 + token válido
+(usando hashing real SHA256 + SAL mockeado).
+
+---
 
 # **Estrategia utilizada**
 
@@ -175,7 +329,7 @@ Se desarrollaron **20 pruebas**, divididas de la siguiente manera:
 
 # **Conclusión**
 
-El proyecto cuenta con una suite sólida de **10 pruebas unitarias, 10 de integración**, que cubren:
+El proyecto cuenta con una suite sólida de **10 pruebas unitarias y 10 de integración, además de las E2E y de seguridad**, que cubren:
 
 * Seguridad
 * Autenticación
@@ -187,4 +341,6 @@ El proyecto cuenta con una suite sólida de **10 pruebas unitarias, 10 de integr
 * Pagos (mocked)
 
 Esto garantiza un backend robusto, probado y mantenible.
+
+
 

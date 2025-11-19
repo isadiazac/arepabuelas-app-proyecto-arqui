@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Informe de Pruebas E2E - Arepabuelas</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; background: #f9f9f9; }
+        h1, h2 { color: #2c3e50; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background-color: #2c3e50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .status-pass { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>✅ Informe de Pruebas E2E - Arepabuelas 🍽️</h1>
+    <p><strong>📆 Fecha de ejecución:</strong> 19 de noviembre de 2025</p>
+    <p><strong>🕐 Duración total:</strong> 4.66 segundos</p>
+    <p><strong>🧪 Total de pruebas ejecutadas:</strong> 4</p>
+    <p><strong>✅ Pasaron:</strong> 4</p>
+    <p><strong>❌ Fallaron:</strong> 0</p>
+    <p><strong>⚠️ Pendientes:</strong> 0</p>
+
+    <h2>🧪 Detalle por prueba</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>N.º</th>
+                <th>Nombre de la prueba</th>
+                <th>Resultado</th>
+                <th>Tiempo (ms)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>1</td><td>debería permitir iniciar sesión con credenciales válidas</td><td class="status-pass">✅ Pasó</td><td>2122</td></tr>
+            <tr><td>2</td><td>debería rechazar credenciales inválidas</td><td class="status-pass">✅ Pasó</td><td>726</td></tr>
+            <tr><td>3</td><td>debería mostrar la vista del menú tras iniciar sesión</td><td class="status-pass">✅ Pasó</td><td>800</td></tr>
+            <tr><td>4</td><td>debería cerrar sesión correctamente</td><td class="status-pass">✅ Pasó</td><td>911</td></tr>
+        </tbody>
+    </table>
+
+    <h2>🛠️ Tecnologías usadas</h2>
+    <ul>
+        <li><strong>Framework:</strong> Cypress</li>
+        <li><strong>Reporteador:</strong> Mochawesome</li>
+        <li><strong>Lenguaje:</strong> TypeScript</li>
+        <li><strong>Modo de ejecución:</strong> Headless</li>
+        <li><strong>Ruta base:</strong> http://localhost:3000</li>
+    </ul>
+
+    <h2>📄 Observaciones</h2>
+    <p>- Todas las pruebas se ejecutaron correctamente.<br>
+    - Se validaron los principales flujos de autenticación (login exitoso y fallido, navegación post-login, logout).<br>
+    - El sistema respondió en tiempos razonables.<br>
+    - No se detectaron errores ni fallos en los flujos probados.</p>
+
+    <h2>📁 Ubicación del reporte HTML</h2>
+    <p>El reporte visual fue generado en: <code>cypress/reports/mochawesome-report/mochawesome.html</code><br>
+    Este archivo puede abrirse en cualquier navegador web.</p>
+</body>
+</html>
