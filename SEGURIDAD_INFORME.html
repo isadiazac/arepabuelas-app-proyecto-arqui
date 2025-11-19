@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Informe de Pruebas de Seguridad y Carga - Arepabuelas</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
+<meta charset="utf-8"/>
+<title>Informe de Pruebas de Seguridad - Arepabuelas</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       line-height: 1.6;
@@ -64,112 +65,105 @@
   </style>
 </head>
 <body>
-
-  <!-- Portada -->
-  <h1>Informe de Pruebas de Seguridad y Carga</h1>
-  <p class="subtitulo">Aplicación Web "Arepabuelas"</p>
-  <p class="autores"><strong>Autores:</strong> Ana María Cordero, Pablo Boada, Isabela Díaz</p>
-  <p class="autores"><strong>Fecha:</strong> 19 de noviembre de 2025</p>
-
-  <div class="bloque">
-    <h2>1. Introducción</h2>
-    <p>
+<!-- Portada -->
+<h1>Informe de Pruebas de Seguridad y Carga</h1>
+<p class="subtitulo">Aplicación Web "Arepabuelas"</p>
+<p class="autores"><strong>Autores:</strong> Ana María Cordero, Pablo Boada, Isabela Díaz</p>
+<p class="autores"><strong>Fecha:</strong> 19 de noviembre de 2025</p>
+<div class="bloque">
+<h2>1. Introducción</h2>
+<p>
       El presente informe documenta las pruebas de seguridad realizadas sobre la aplicación web
       <strong>Arepabuelas</strong>, desarrollada con un frontend en React, un backend en Node.js y una base
       de datos PostgreSQL, todos ejecutándose en un entorno contenerizado con Docker.
     </p>
-    <p>
+<p>
       El objetivo principal es identificar vulnerabilidades técnicas, evaluar la exposición de servicios
       en red y proponer mitigaciones concretas alineadas con buenas prácticas de seguridad web. Para ello
       se emplearon herramientas de análisis dinámico y de infraestructura, específicamente
       <strong>OWASP ZAP</strong>, <strong>Nikto</strong> y <strong>Nmap</strong>.
     </p>
-  </div>
-
-  <div class="bloque">
-    <h2>2. Arquitectura del sistema</h2>
-    <p>
+</div>
+<div class="bloque">
+<h2>2. Arquitectura del sistema</h2>
+<p>
       La aplicación Arepabuelas adopta una arquitectura <strong>cliente–servidor</strong> distribuida, desplegada
       mediante un stack Docker donde, al levantar el entorno, se habilitan tres servicios diferenciados:
     </p>
-    <ul>
-      <li><strong>Frontend:</strong> Aplicación React sirviendo la interfaz web, expuesta en <span class="code">http://localhost:3000</span>.</li>
-      <li><strong>Backend:</strong> API REST construida con Node.js/Express, expuesta en <span class="code">http://localhost:4000</span>.</li>
-      <li><strong>Base de datos:</strong> PostgreSQL, accesible únicamente desde el backend dentro de la red interna de Docker.</li>
-    </ul>
-    <p>
+<ul>
+<li><strong>Frontend:</strong> Aplicación React sirviendo la interfaz web, expuesta en <span class="code">http://localhost:3000</span>.</li>
+<li><strong>Backend:</strong> API REST construida con Node.js/Express, expuesta en <span class="code">http://localhost:4000</span>.</li>
+<li><strong>Base de datos:</strong> PostgreSQL, accesible únicamente desde el backend dentro de la red interna de Docker.</li>
+</ul>
+<p>
       Esta estructura responde a un modelo clásico de <strong>tres capas</strong>:
     </p>
-    <ul>
-      <li><strong>Capa de presentación:</strong> el frontend React, que maneja la UX y las interacciones del usuario.</li>
-      <li><strong>Capa de lógica de negocio:</strong> el backend Node/Express, donde se implementan las reglas de negocio, autenticación y acceso a datos.</li>
-      <li><strong>Capa de persistencia:</strong> la base de datos PostgreSQL, responsable del almacenamiento permanente de la información.</li>
-    </ul>
-    <p>
+<ul>
+<li><strong>Capa de presentación:</strong> el frontend React, que maneja la UX y las interacciones del usuario.</li>
+<li><strong>Capa de lógica de negocio:</strong> el backend Node/Express, donde se implementan las reglas de negocio, autenticación y acceso a datos.</li>
+<li><strong>Capa de persistencia:</strong> la base de datos PostgreSQL, responsable del almacenamiento permanente de la información.</li>
+</ul>
+<p>
       Desde la perspectiva del <strong>modelo C4</strong>, el sistema puede describirse así:
     </p>
-    <ul>
-      <li><strong>Contexto:</strong> Un sistema web que permite la gestión de funcionalidades internas de Arepabuelas, accedido por usuarios administradores a través del navegador.</li>
-      <li><strong>Contenedores:</strong> tres contenedores (frontend React, backend Node, DB PostgreSQL) comunicados por una red interna Docker.</li>
-      <li><strong>Componentes:</strong> en el backend se pueden distinguir controladores (rutas), servicios de dominio y componentes de acceso a datos; en el frontend, vistas/páginas y componentes React que consumen la API.</li>
-      <li><strong>Vista física:</strong> todos los contenedores se ejecutan en un mismo host, aislados pero coordinados por Docker Compose.</li>
-    </ul>
-  </div>
-
-  <div class="bloque">
-    <h2>3. Metodología de pruebas</h2>
-    <p>
+<ul>
+<li><strong>Contexto:</strong> Un sistema web que permite la gestión de funcionalidades internas de Arepabuelas, accedido por usuarios administradores a través del navegador.</li>
+<li><strong>Contenedores:</strong> tres contenedores (frontend React, backend Node, DB PostgreSQL) comunicados por una red interna Docker.</li>
+<li><strong>Componentes:</strong> en el backend se pueden distinguir controladores (rutas), servicios de dominio y componentes de acceso a datos; en el frontend, vistas/páginas y componentes React que consumen la API.</li>
+<li><strong>Vista física:</strong> todos los contenedores se ejecutan en un mismo host, aislados pero coordinados por Docker Compose.</li>
+</ul>
+</div>
+<div class="bloque">
+<h2>3. Metodología de pruebas</h2>
+<p>
       Para evaluar la seguridad de Arepabuelas se siguió una metodología basada en el uso de herramientas
       especializadas y en el análisis manual de los resultados:
     </p>
-    <ul>
-      <li>
-        <strong>OWASP ZAP:</strong> se utilizó para realizar un escaneo activo de la aplicación, incluyendo:
+<ul>
+<li>
+<strong>OWASP ZAP:</strong> se utilizó para realizar un escaneo activo de la aplicación, incluyendo:
         crawleo de <span class="code">http://localhost:3000</span> y <span class="code">http://localhost:4000</span>,
         identificación de cabeceras de seguridad faltantes, revisión de políticas CSP y análisis de posibles problemas de configuración.
       </li>
-      <li>
-        <strong>Nikto:</strong> se ejecutó contra los puertos 3000 (frontend) y 4000 (backend) con el fin de detectar
+<li>
+<strong>Nikto:</strong> se ejecutó contra los puertos 3000 (frontend) y 4000 (backend) con el fin de detectar
         configuraciones inseguras a nivel de servidor web (cabeceras, archivos potencialmente accesibles, etc.).
       </li>
-      <li>
-        <strong>Nmap:</strong> se realizó un escaneo de puertos y detección de servicios en <span class="code">localhost</span>
+<li>
+<strong>Nmap:</strong> se realizó un escaneo de puertos y detección de servicios en <span class="code">localhost</span>
         sobre los puertos 3000 y 4000, incluyendo fingerprint de versiones y respuestas HTTP devueltas.
       </li>
-    </ul>
-    <p class="small">
+</ul>
+<p class="small">
       Nota: Las pruebas de carga se planearon con K6, pero en este informe se documentan únicamente las pruebas de
       seguridad (ZAP, Nikto, Nmap).
     </p>
-  </div>
-
-  <!-- ZAP -->
-  <div class="bloque">
-    <h2>4. Escaneo OWASP ZAP</h2>
-
-    <h3>4.1 Resumen de hallazgos</h3>
-    <p>
+</div>
+<!-- ZAP -->
+<div class="bloque">
+<h2>4. Escaneo OWASP ZAP</h2>
+<h3>4.1 Resumen de hallazgos</h3>
+<p>
       El reporte de OWASP ZAP sobre <span class="code">http://localhost:3000</span> y
       <span class="code">http://localhost:4000</span> indica un total de <strong>20 alertas</strong>, distribuidas en:
     </p>
-    <ul>
-      <li><strong>Riesgo Medio:</strong> 6 alertas (principalmente relacionadas con Content Security Policy y configuraciones CORS).</li>
-      <li><strong>Riesgo Bajo:</strong> 4 alertas (exposición de información en cabeceras como <span class="code">Server</span> y <span class="code">X-Powered-By</span>, cabeceras de seguridad faltantes).</li>
-      <li><strong>Informativas:</strong> 10 alertas (detección de tecnologías, gestión de sesión, aplicación web moderna, etc.).</li>
-    </ul>
-    <p>
+<ul>
+<li><strong>Riesgo Medio:</strong> 6 alertas (principalmente relacionadas con Content Security Policy y configuraciones CORS).</li>
+<li><strong>Riesgo Bajo:</strong> 4 alertas (exposición de información en cabeceras como <span class="code">Server</span> y <span class="code">X-Powered-By</span>, cabeceras de seguridad faltantes).</li>
+<li><strong>Informativas:</strong> 10 alertas (detección de tecnologías, gestión de sesión, aplicación web moderna, etc.).</li>
+</ul>
+<p>
       Entre los tipos de alerta más relevantes se destacan:
     </p>
-    <ul>
-      <li><strong>CSP: Directiva Wildcard / unsafe-inline / no configurada:</strong> problemas con la cabecera <span class="code">Content-Security-Policy</span>.</li>
-      <li><strong>Configuración incorrecta cross-domain:</strong> uso de <span class="code">Access-Control-Allow-Origin: *</span> en el backend.</li>
-      <li><strong>Falta de cabecera Anti-Clickjacking:</strong> ausencia de <span class="code">X-Frame-Options</span> en algunas respuestas (especialmente frontend).</li>
-      <li><strong>Falta encabezado X-Content-Type-Options:</strong> posibilidad de que el navegador “adivine” tipos MIME.</li>
-      <li><strong>Divulgación de versión:</strong> cabeceras como <span class="code">Server: nginx/1.28.0</span> o tecnologías detectadas (Express, Vite, etc.).</li>
-    </ul>
-
-    <h3>4.2 Explicación e interpretación del escaneo ZAP</h3>
-    <p>
+<ul>
+<li><strong>CSP: Directiva Wildcard / unsafe-inline / no configurada:</strong> problemas con la cabecera <span class="code">Content-Security-Policy</span>.</li>
+<li><strong>Configuración incorrecta cross-domain:</strong> uso de <span class="code">Access-Control-Allow-Origin: *</span> en el backend.</li>
+<li><strong>Falta de cabecera Anti-Clickjacking:</strong> ausencia de <span class="code">X-Frame-Options</span> en algunas respuestas (especialmente frontend).</li>
+<li><strong>Falta encabezado X-Content-Type-Options:</strong> posibilidad de que el navegador “adivine” tipos MIME.</li>
+<li><strong>Divulgación de versión:</strong> cabeceras como <span class="code">Server: nginx/1.28.0</span> o tecnologías detectadas (Express, Vite, etc.).</li>
+</ul>
+<h3>4.2 Explicación e interpretación del escaneo ZAP</h3>
+<p>
       El escaneo de ZAP muestra que la aplicación ya incluye algunas defensas importantes a nivel de backend,
       como una política CSP relativamente estricta y cabeceras como <span class="code">Strict-Transport-Security</span>,
       <span class="code">X-Frame-Options</span> y <span class="code">X-Content-Type-Options</span> en ciertas
@@ -181,24 +175,21 @@
       debilidad del sistema no está en vulnerabilidades de negocio específicas, sino en la <strong>configuración
       incompleta o inconsistente</strong> de cabeceras y políticas de seguridad a nivel de HTTP.
     </p>
-  </div>
-
-  <!-- Nikto backend -->
-  <div class="bloque">
-    <h2>5. Escaneo Nikto – Backend (puerto 4000)</h2>
-
-    <h3>5.1 Resumen de hallazgos</h3>
-    <p>
+</div>
+<!-- Nikto backend -->
+<div class="bloque">
+<h2>5. Escaneo Nikto – Backend (puerto 4000)</h2>
+<h3>5.1 Resumen de hallazgos</h3>
+<p>
       El escaneo Nikto contra <span class="code">localhost:4000</span> arrojó los siguientes puntos relevantes:
     </p>
-    <ul>
-      <li>Se detectó la cabecera <span class="code">Access-Control-Allow-Origin: *</span>, lo cual indica una política CORS muy permisiva.</li>
-      <li>Se reportó ausencia de <span class="code">X-Content-Type-Options</span> en algunas respuestas analizadas.</li>
-      <li>Se encontraron cabeceras de rate limiting (<span class="code">X-RateLimit-Limit</span>, <span class="code">X-RateLimit-Remaining</span>, <span class="code">X-RateLimit-Reset</span>), lo cual es bueno para proteger el API de abuso.</li>
-    </ul>
-
-    <h3>5.2 Explicación e interpretación del escaneo Nikto (backend)</h3>
-    <p>
+<ul>
+<li>Se detectó la cabecera <span class="code">Access-Control-Allow-Origin: *</span>, lo cual indica una política CORS muy permisiva.</li>
+<li>Se reportó ausencia de <span class="code">X-Content-Type-Options</span> en algunas respuestas analizadas.</li>
+<li>Se encontraron cabeceras de rate limiting (<span class="code">X-RateLimit-Limit</span>, <span class="code">X-RateLimit-Remaining</span>, <span class="code">X-RateLimit-Reset</span>), lo cual es bueno para proteger el API de abuso.</li>
+</ul>
+<h3>5.2 Explicación e interpretación del escaneo Nikto (backend)</h3>
+<p>
       El resultado de Nikto confirma que el backend expone una API con cierto nivel de robustez (incluyendo
       rate limiting), pero mantiene una <strong>política CORS excesivamente abierta</strong> al permitir el acceso
       desde cualquier origen (<span class="code">*</span>). Esto puede ser aprovechado por sitios de terceros
@@ -208,29 +199,26 @@
       En conjunto, el backend no presenta vulnerabilidades críticas directas, pero su configuración actual
       requiere endurecimiento para alinearse con buenas prácticas de seguridad de APIs.
     </p>
-  </div>
-
-  <!-- Nikto frontend -->
-  <div class="bloque">
-    <h2>6. Escaneo Nikto – Frontend (puerto 3000)</h2>
-
-    <h3>6.1 Resumen de hallazgos</h3>
-    <p>
+</div>
+<!-- Nikto frontend -->
+<div class="bloque">
+<h2>6. Escaneo Nikto – Frontend (puerto 3000)</h2>
+<h3>6.1 Resumen de hallazgos</h3>
+<p>
       El escaneo Nikto sobre <span class="code">localhost:3000</span> reportó:
     </p>
-    <ul>
-      <li>Ausencia de la cabecera <span class="code">X-Frame-Options</span> (protección anti-clickjacking).</li>
-      <li>Ausencia de la cabecera <span class="code">X-Content-Type-Options</span>.</li>
-      <li>
+<ul>
+<li>Ausencia de la cabecera <span class="code">X-Frame-Options</span> (protección anti-clickjacking).</li>
+<li>Ausencia de la cabecera <span class="code">X-Content-Type-Options</span>.</li>
+<li>
         Múltiples entradas del tipo “<em>Potentially interesting backup/cert file found</em>” para rutas como
         <span class="code">/backup.tar</span>, <span class="code">/database.war</span>, <span class="code">/localhost.pem</span>, etc.
         En la práctica, Nikto suele probar estas rutas con peticiones <code>HEAD</code>; normalmente devuelven 404, pero
         se listan como potencialmente interesantes.
       </li>
-    </ul>
-
-    <h3>6.2 Explicación e interpretación del escaneo Nikto (frontend)</h3>
-    <p>
+</ul>
+<h3>6.2 Explicación e interpretación del escaneo Nikto (frontend)</h3>
+<p>
       Los resultados de Nikto en el frontend son coherentes con lo observado en ZAP: el servidor que sirve la
       aplicación React (en este caso nginx) no está configurado con las cabeceras de seguridad recomendadas por
       OWASP. La ausencia de <span class="code">X-Frame-Options</span> permite que la aplicación sea embebida en iframes
@@ -242,36 +230,33 @@
       pena revisar que no se suban accidentalmente artefactos de despliegue o copias de bases de datos al directorio
       servido por nginx.
     </p>
-  </div>
-
-  <!-- Nmap -->
-  <div class="bloque">
-    <h2>7. Escaneo Nmap</h2>
-
-    <h3>7.1 Resumen de hallazgos</h3>
-    <p>
+</div>
+<!-- Nmap -->
+<div class="bloque">
+<h2>7. Escaneo Nmap</h2>
+<h3>7.1 Resumen de hallazgos</h3>
+<p>
       El comando ejecutado fue similar a:
     </p>
-    <p class="code">
+<p class="code">
       nmap -sV -A -p3000,4000 localhost
     </p>
-    <p>
+<p>
       Los resultados principales fueron:
     </p>
-    <ul>
-      <li><strong>Puerto 3000/tcp:</strong> abierto, servicio HTTP con <span class="code">nginx 1.28.0</span>.</li>
-      <li>
-        <strong>Puerto 4000/tcp:</strong> abierto, servicio HTTP personalizado (Node/Express) que responde con códigos
+<ul>
+<li><strong>Puerto 3000/tcp:</strong> abierto, servicio HTTP con <span class="code">nginx 1.28.0</span>.</li>
+<li>
+<strong>Puerto 4000/tcp:</strong> abierto, servicio HTTP personalizado (Node/Express) que responde con códigos
         como <span class="code">429 Too Many Requests</span> y cabeceras de seguridad (CSP, HSTS, X-Frame-Options, etc.).
       </li>
-      <li>
+<li>
         El host corre sobre una distribución Linux (kernel 5.x/6.x según fingerprint), sin otros puertos abiertos en
         el rango analizado.
       </li>
-    </ul>
-
-    <h3>7.2 Explicación e interpretación del escaneo Nmap</h3>
-    <p>
+</ul>
+<h3>7.2 Explicación e interpretación del escaneo Nmap</h3>
+<p>
       El escaneo de Nmap confirma que la superficie de exposición en red está limitada a los puertos esperados
       (3000 y 4000), lo cual es positivo. Sin embargo, también revela información sensible como la versión exacta de
       <span class="code">nginx/1.28.0</span> en el frontend. Este tipo de datos puede ser aprovechado por un atacante
@@ -281,77 +266,92 @@
       hardening, se recomienda ocultar banners de versión cuando sea posible y revisar periódicamente que los
       servicios expuestos no tengan CVEs abiertas en esas versiones.
     </p>
-  </div>
-
-  <div class="bloque">
-    <h2>8. Mitigaciones propuestas</h2>
-    <p>
+</div>
+<div class="bloque">
+<h2>8. Mitigaciones propuestas</h2>
+<p>
       A partir de los hallazgos de ZAP, Nikto y Nmap, se proponen las siguientes acciones de mitigación:
     </p>
-    <ul>
-      <li>
-        <strong>Configurar correctamente Content-Security-Policy (CSP):</strong>
+<ul>
+<li>
+<strong>Configurar correctamente Content-Security-Policy (CSP):</strong>
         eliminar <span class="code">'unsafe-inline'</span> en <span class="code">style-src</span> cuando sea posible,
         limitar <span class="code">img-src</span>, <span class="code">font-src</span> y demás directivas a orígenes estrictamente necesarios.
       </li>
-      <li>
-        <strong>Unificar cabeceras de seguridad en frontend y backend:</strong>
+<li>
+<strong>Unificar cabeceras de seguridad en frontend y backend:</strong>
         asegurar que todas las respuestas incluyan (según aplique)
         <span class="code">X-Frame-Options</span> o <span class="code">frame-ancestors</span> en CSP,
         <span class="code">X-Content-Type-Options: nosniff</span>,
         <span class="code">Referrer-Policy</span> restrictiva y <span class="code">Strict-Transport-Security</span>
         cuando se use HTTPS.
       </li>
-      <li>
-        <strong>Endurecer CORS:</strong>
+<li>
+<strong>Endurecer CORS:</strong>
         reemplazar <span class="code">Access-Control-Allow-Origin: *</span> por una lista explícita de orígenes
         confiables (por ejemplo, el dominio real del frontend en producción).
       </li>
-      <li>
-        <strong>Revisar archivos expuestos:</strong>
+<li>
+<strong>Revisar archivos expuestos:</strong>
         confirmar que en el directorio público del frontend no existan archivos de backup, certificados,
         <span class="code">.war</span>, <span class="code">.tar</span>, <span class="code">.tgz</span>, etc.
       </li>
-      <li>
-        <strong>Reducir información en banners:</strong>
+<li>
+<strong>Reducir información en banners:</strong>
         configurar nginx y otros servidores para no exponer versiones exactas en la cabecera
         <span class="code">Server</span>.
       </li>
-      <li>
-        <strong>Revisar autenticación y sesiones:</strong>
+<li>
+<strong>Revisar autenticación y sesiones:</strong>
         asegurar que las cookies de autenticación estén marcadas como
         <span class="code">HttpOnly</span>, <span class="code">Secure</span> y con <span class="code">SameSite</span>
         apropiado (por ejemplo, <span class="code">Strict</span> o <span class="code">Lax</span>).
       </li>
-      <li>
-        <strong>Pruebas posteriores:</strong>
+<li>
+<strong>Pruebas posteriores:</strong>
         una vez aplicadas las mitigaciones, repetir los escaneos de ZAP y Nikto para verificar que las alertas
         relacionadas a cabeceras y políticas hayan disminuido.
       </li>
-    </ul>
-  </div>
-
-  <div class="bloque">
-    <h2>9. Conclusiones</h2>
-    <p>
+</ul>
+</div>
+<div class="bloque">
+<h2>10. Escaneo Trivy (Contenedores)</h2>
+<h3>10.1 Resultados por servicio</h3>
+<ul>
+<li><strong>Backend (Node.js):</strong> Trivy reportó varias vulnerabilidades con niveles de riesgo medio y alto, principalmente en dependencias de Node utilizadas en el contenedor. Algunos paquetes críticos requieren actualización o reemplazo (por ejemplo, versiones antiguas de Express o bibliotecas de logging).</li>
+<li><strong>Frontend (React):</strong> el escaneo detectó vulnerabilidades menores, en su mayoría relacionadas con dependencias de desarrollo (devDependencies), lo cual reduce su impacto en producción.</li>
+<li><strong>Base de datos:</strong> Trivy identificó varias CVEs en la imagen base de PostgreSQL (por ejemplo, en paquetes del sistema operativo), pero ninguna directamente explotable en el contexto actual. Se sugiere usar imágenes actualizadas con menor superficie de ataque.</li>
+</ul>
+<h3>10.2 Interpretación y recomendaciones</h3>
+<p>
+  El análisis de Trivy pone de manifiesto la importancia de mantener actualizadas las imágenes y dependencias de los contenedores. En particular:
+</p>
+<ul>
+<li>Evitar imágenes <strong>:latest</strong> sin control de versiones, optando por versiones específicas y estables.</li>
+<li>Aplicar <strong>actualizaciones de seguridad</strong> periódicas en paquetes del sistema dentro de los contenedores (por ejemplo, usando imágenes oficiales actualizadas).</li>
+<li>Reducir el uso de dependencias innecesarias, sobre todo en producción.</li>
+<li>Automatizar el análisis de imágenes como parte del proceso CI/CD, para detectar vulnerabilidades antes del despliegue.</li>
+</ul>
+</div><div class="bloque">
+<h2>9. Conclusiones</h2>
+<p>
       La aplicación Arepabuelas presenta una arquitectura moderna y modular, apropiada para su contexto de uso,
       con una separación clara entre frontend, backend y base de datos en contenedores Docker. Las pruebas de
       seguridad realizadas con OWASP ZAP, Nikto y Nmap no revelan vulnerabilidades críticas de negocio o fallos
       graves como inyecciones directamente explotables; sin embargo, sí ponen de manifiesto <strong>debilidades
       importantes en la configuración de seguridad a nivel de cabeceras HTTP, políticas CSP y CORS</strong>.
     </p>
-    <p>
+<p>
       Estas debilidades, de no corregirse, podrían facilitar ataques como XSS, clickjacking o abuso del API desde
       orígenes no autorizados. La buena noticia es que la mayoría de los problemas identificados pueden mitigarse
       mediante ajustes de configuración relativamente sencillos en nginx y Express, junto con una revisión de los
       headers generados por el backend.
     </p>
-    <p>
+<p>
       Como trabajo futuro, se recomienda integrar estas configuraciones de seguridad dentro del ciclo de desarrollo
       (por ejemplo, como parte de la configuración por defecto del proyecto) y automatizar los escaneos de ZAP/Nikto
       en un pipeline de CI/CD para detectar regresiones de seguridad de manera temprana.
     </p>
-  </div>
-
+</div>
 </body>
 </html>
