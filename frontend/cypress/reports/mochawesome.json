@@ -1,0 +1,162 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 4,
+    "passes": 4,
+    "pending": 0,
+    "failures": 0,
+    "start": "2025-11-19T16:45:57.539Z",
+    "end": "2025-11-19T16:46:02.197Z",
+    "duration": 4658,
+    "testsRegistered": 4,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "46e4e3cc-12ff-491c-8a1a-c5a06e0c7532",
+      "title": "",
+      "fullFile": "cypress\\e2e\\proyecto.cy.js",
+      "file": "cypress\\e2e\\proyecto.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "d8f31285-2b88-4d29-8f9d-d7308b8e4dcf",
+          "title": "Flujos de pruebas - Arepabuelas",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "debería permitir iniciar sesión con credenciales válidas",
+              "fullTitle": "Flujos de pruebas - Arepabuelas debería permitir iniciar sesión con credenciales válidas",
+              "timedOut": null,
+              "duration": 2122,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit('http://localhost:3000');\ncy.get('input[placeholder=\"Correo Electrónico\"]').type('admin@arepabuelas.com');\ncy.get('input[placeholder=\"Contraseña\"]').type('admin123');\ncy.get('button').contains('Iniciar Sesión').click();\ncy.url().should('include', '/menu');\ncy.contains('Menú');",
+              "err": {},
+              "uuid": "0fba46a8-bd38-4e2a-8f19-1be439701782",
+              "parentUUID": "d8f31285-2b88-4d29-8f9d-d7308b8e4dcf",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "debería rechazar credenciales inválidas",
+              "fullTitle": "Flujos de pruebas - Arepabuelas debería rechazar credenciales inválidas",
+              "timedOut": null,
+              "duration": 726,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit('http://localhost:3000');\ncy.get('input[placeholder=\"Correo Electrónico\"]').type('fake@correo.com');\ncy.get('input[placeholder=\"Contraseña\"]').type('incorrecto');\ncy.get('button').contains('Iniciar Sesión').click();\ncy.contains('Usuario no encontrado'); // Ajusta según tu mensaje real",
+              "err": {},
+              "uuid": "e231f2d9-0b6c-42ca-a776-138ac4a4677d",
+              "parentUUID": "d8f31285-2b88-4d29-8f9d-d7308b8e4dcf",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "debería mostrar la vista del menú tras iniciar sesión",
+              "fullTitle": "Flujos de pruebas - Arepabuelas debería mostrar la vista del menú tras iniciar sesión",
+              "timedOut": null,
+              "duration": 800,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.login('admin@arepabuelas.com', 'admin123');\ncy.url().should('include', '/menu');\ncy.contains('Menú');",
+              "err": {},
+              "uuid": "5694cab0-2c02-4cc8-9ed5-9b8b53d28b1e",
+              "parentUUID": "d8f31285-2b88-4d29-8f9d-d7308b8e4dcf",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "debería cerrar sesión correctamente",
+              "fullTitle": "Flujos de pruebas - Arepabuelas debería cerrar sesión correctamente",
+              "timedOut": null,
+              "duration": 911,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.login('admin@arepabuelas.com', 'admin123');\n// Confirmamos que estamos en el menú\ncy.url().should('include', '/menu');\ncy.contains('Menú');\n// Hacemos clic en el botón de logout (es un <a> con href='/login')\ncy.get('a[href=\"/login\"]').click();\n// Verificamos que redirige correctamente\ncy.url().should('eq', 'http://localhost:3000/login');\ncy.contains('Iniciar Sesión'); // Ajusta según el texto visible en login",
+              "err": {},
+              "uuid": "6b26a5e5-6eb9-4094-baf7-e0a2b5f4128c",
+              "parentUUID": "d8f31285-2b88-4d29-8f9d-d7308b8e4dcf",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "0fba46a8-bd38-4e2a-8f19-1be439701782",
+            "e231f2d9-0b6c-42ca-a776-138ac4a4677d",
+            "5694cab0-2c02-4cc8-9ed5-9b8b53d28b1e",
+            "6b26a5e5-6eb9-4094-baf7-e0a2b5f4128c"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 4559,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}
