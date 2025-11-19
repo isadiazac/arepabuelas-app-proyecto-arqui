@@ -1,0 +1,85 @@
+name: Backend CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  ci-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Config Node
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      # 3. Instalar dependencias
+      - name: Install dependencies
+        run: npm install
+
+      # 4. Ejecutar Jest (unit + integration)
+      - name: Run Jest tests
+        env:
+          NODE_ENV: test
+        run: npm test
+
+      # 5. Instalar Newman
+      - name: Install Newman
+        run: npm install -g newman newman-reporter-htmlextra
+
+      # 6. Ejecutar colección Postman
+      - name: Run Postman API tests
+        run: |
+          newman run ./postman/arepabuelas_collection.json \
+            --environment ./postman/env.json \
+            --reporters cli,htmlextra \
+            --reporter-htmlextra-export ./postman-report.html
+
+      # 7. Subir reporte de Postman como artefacto
+      - name: Upload Postman report
+        uses: actions/upload-artifact@v4
+        with:
+          name: postman-report
+          path: postman-report.html
+
+      # 8. Security scanning: Gitleaks
+      - name: Secrets scanning (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: --no-color
+
+      # 9. SAST: Semgrep
+      - name: Static Analysis (Semgrep)
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: "p/owasp-top-ten"
+
+      # 10. Dependency Scanning
+      - name: Dependency scanning (OWASP Dependency-Check)
+        uses: dependency-check/Dependency-Check_Action@v3
+        with:
+          project: "Arepabuelas Backend"
+          path: .
+          format: "HTML"
+          out: "dependency-report"
+
+      - name: Upload dependency report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-report
+          path: dependency-report
+
+      # 11. SonarQube
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v2
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

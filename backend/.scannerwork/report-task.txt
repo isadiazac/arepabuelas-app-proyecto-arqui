@@ -1,0 +1,6 @@
+projectKey=arepabuelas-backend
+serverUrl=http://localhost:9000
+serverVersion=25.11.0.114957
+dashboardUrl=http://localhost:9000/dashboard?id=arepabuelas-backend
+ceTaskId=a9d76db6-05f2-4285-bb7e-016eb4176e27
+ceTaskUrl=http://localhost:9000/api/ce/task?id=a9d76db6-05f2-4285-bb7e-016eb4176e27
