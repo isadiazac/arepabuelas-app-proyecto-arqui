@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Informe de Pruebas de Carga - Arepabuelas</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f4f4f9;
+      padding: 2rem;
+      max-width: 900px;
+      margin: auto;
+      color: #333;
+    }
+    h1, h2 {
+      color: #1a365d;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 0.2rem;
+    }
+    .section {
+      background: white;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    ul {
+      padding-left: 1.2rem;
+    }
+    .code {
+      background: #eee;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Informe de Pruebas de Carga</h1>
+<p style="text-align:center;">Aplicación Web "Arepabuelas"</p>
+<p style="text-align:center;">Fecha: 19 de noviembre de 2025</p>
+
+<div class="section">
+  <h2>1. Introducción</h2>
+  <p>Este informe documenta las pruebas de carga ejecutadas sobre la aplicación Arepabuelas mediante la herramienta <strong>k6</strong>. El objetivo fue medir el comportamiento del sistema bajo múltiples usuarios concurrentes, incluyendo autenticación y acceso a rutas protegidas.</p>
+</div>
+
+<div class="section">
+  <h2>2. Escenario de pruebas</h2>
+  <ul>
+    <li>Usuarios virtuales (VUs): 10</li>
+    <li>Duración: 30 segundos</li>
+    <li>Prueba: login y acceso a <span class="code">/api/users/active</span> con JWT</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>3. Resultados esperados</h2>
+  <ul>
+    <li>El login debe responder con <span class="code">200 OK</span>.</li>
+    <li>Debe recibirse un token JWT válido.</li>
+    <li>El endpoint protegido debe responder con <span class="code">200 OK</span> al recibir el token.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>4. Resultados observados</h2>
+  <p>Durante la ejecución de la prueba, el backend comenzó a responder con códigos <span class="code">429 Too Many Requests</span> después de varios intentos de login.</p>
+  <p>Esto indica que el backend cuenta con mecanismos de <strong>rate limiting</strong>, lo cual es una buena práctica de seguridad, pero impide pruebas masivas sin configuración previa para permitirlas.</p>
+</div>
+
+<div class="section">
+  <h2>5. Recomendaciones</h2>
+  <ul>
+    <li>Configurar el sistema de autenticación para permitir ciertas IPs de prueba sin límite o con límites más altos durante las pruebas de carga.</li>
+    <li>Incluir una pausa (sleep) entre inicios de sesión o distribuir logins previos y luego solo medir las rutas protegidas.</li>
+    <li>Separar pruebas de login de pruebas de endpoints autenticados para no sobrecargar el login.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>6. Conclusiones</h2>
+  <p>El sistema respondió correctamente inicialmente, pero las defensas antiabuso bloquearon los intentos posteriores. Esto demuestra una configuración adecuada para producción, pero se recomienda ajustar temporalmente dichos parámetros para entornos de prueba controlados.</p>
+</div>
+
+
+  <div class="bloque">
+    <h2>5. Primera ejecución: resultados exitosos</h2>
+    <p>
+      Durante la primera ejecución del script con 50 VUs simultáneos y múltiples escenarios, se observó lo siguiente:
+    </p>
+    <ul>
+      <li><strong>Frontend responde 200:</strong> ✓ 100% (todas las respuestas fueron exitosas)</li>
+      <li><strong>Login responde 200:</strong> ✗ 16% (debido a errores intermitentes por volumen)</li>
+      <li><strong>Token presente:</strong> ✗ 16%</li>
+      <li><strong>Acceso a /users/active:</strong> ✗ 0% (por fallos en login)</li>
+    </ul>
+    <p>
+      El frontend demostró buena capacidad de respuesta y estabilidad. Sin embargo, el backend presentó problemas de
+      capacidad para manejar múltiples inicios de sesión simultáneos, con respuestas 429 antes de finalizar el escenario.
+    </p>
+  </div>
+
+  <div class="bloque">
+    <h2>6. Segunda ejecución: límites de tasa alcanzados</h2>
+    <p>
+      Durante la segunda ejecución del script con 10 VUs durante 30 segundos, el backend respondió consistentemente con el
+      código <code>429 Too Many Requests</code> debido al mecanismo de rate limiting habilitado en el API.
+    </p>
+    <p>
+      Esto indica que la protección contra abuso está funcionando correctamente, limitando la cantidad de inicios de sesión
+      desde una misma IP. Sin embargo, para pruebas de carga controladas, se recomienda desactivar temporalmente este
+      middleware o configurar una mayor tolerancia.
+    </p>
+    <ul>
+      <li><strong>Login responde 200:</strong> ✗ 0% (todas las solicitudes bloqueadas con 429)</li>
+      <li><strong>Token presente:</strong> ✗ 0% (no se emitió ningún token)</li>
+      <li><strong>Acceso a /users/active:</strong> ✗ 0% (no se ejecutó por fallo en login)</li>
+    </ul>
+  </div>
+
+</body>
+</html>
