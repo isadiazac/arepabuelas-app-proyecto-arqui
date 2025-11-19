@@ -1,5 +1,7 @@
-# **Estrategia de Pruebas del Backend (Arepabuelas App)**
-### Isabel Díaz Acosta, Pablo Boada, Ana Maria Cordero
+# **Estrategia de Pruebas (Arepabuelas App)**
+### Isabela Díaz Acosta, Pablo Boada, Ana Maria Cordero
+---
+## Backend:
 
 Este repositorio cuenta con una estrategia completa de pruebas implementada para el backend del proyecto **Arepabuelas App**.
 Se desarrollaron **pruebas automatizadas**, entre **unitarias** e **integración**, usando Jest + Supertest, mock de base de datos, y aislamiento total de dependencias externas.
@@ -15,6 +17,10 @@ Se desarrollaron **pruebas automatizadas**, entre **unitarias** e **integración
 | **babel-jest**        | Permite usar ES Modules con Jest                       |
 | **Mocks de Jest**     | Simulación de PostgreSQL, bcrypt, multer y auditLogger |
 | **Node.js + Express** | Backend probado                                        |
+
+---
+## Colección de postman
+[Postman](https://isadiac06-8447466.postman.co/workspace/Isabela-D%C3%ADaz-Acosta's-Workspace~9e2b66f0-0753-4365-8205-f3c81aec62b1/collection/48860550-e967a387-b7dd-44cf-b591-bfc1b698fbda?action=share&creator=48860550)
 
 ---
 
@@ -318,6 +324,13 @@ POST /api/auth/login devuelve 200 + token válido
    * Archivos reales
    * Multer real
    * .env real
+
+---
+
+## Pipeline CI/CD ― Descripción General
+
+Este proyecto integra un **pipeline completo de CI/CD** mediante **GitHub Actions**, el cual se ejecuta automáticamente en cada *push* o *pull request*. El pipeline valida la calidad del software asegurando que el backend funcione correctamente antes de cualquier despliegue.
+Durante la ejecución, el workflow realiza las siguientes tareas: instala dependencias, levanta un entorno aislado con PostgreSQL, ejecuta todas las **pruebas unitarias e integración con Jest**, corre la **colección de Postman con Newman** para validar las APIs, y realiza análisis automatizados de seguridad y calidad. Esta automatización garantiza que cada cambio en el proyecto sea verificado de manera consistente, reduciendo errores, asegurando la estabilidad del sistema y permitiendo un proceso de desarrollo más confiable y profesional.
 
 ---
 

@@ -1,0 +1,265 @@
+{
+  "info": {
+    "_postman_id": "f2a9a4e5-aaa1-4dcd-9877-arepabuelas-postman",
+    "name": "Arepabuelas API Full Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "AUTH — Registrar Usuario",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{base_url}}/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Isa\",\"email\":\"isa@test.com\",\"password\":\"12345678\"}",
+          "options": { "raw": { "language": "json" } }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Registro falla por usuario pendiente\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "AUTH — Login User",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\":\"isa@test.com\",\"password\":\"123\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Login devuelve 200\", function () { pm.response.to.have.status(200); });",
+              "var json = pm.response.json();",
+              "pm.environment.set(\"user_token\", json.token);",
+              "pm.test(\"Token guardado\", () => pm.expect(json.token).to.not.be.empty);"
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "AUTH — Login Admin",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\":\"admin@test.com\",\"password\":\"adminpass\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Login admin ok\", () => pm.response.to.have.status(200));",
+              "pm.environment.set(\"admin_token\", pm.response.json().token);"
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "ADMIN — Listar usuarios pendientes",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/users/pending",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Admin puede ver pendientes\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "PRODUCTOS — Crear producto",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/products",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "name", "value": "Arepa Queso" },
+            { "key": "description", "value": "Muy buena" },
+            { "key": "price", "value": "8000" },
+            { "key": "stock", "value": "10" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Producto creado\", () => pm.response.to.have.status(201));",
+              "pm.environment.set(\"created_product_id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "PRODUCTOS — Listar productos",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/products"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Lista productos ok\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "PRODUCTOS — Obtener producto por ID",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/products/{{created_product_id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Producto encontrado\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "COMENTARIOS — Crear comentario",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/comments/{{created_product_id}}",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{user_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"content\":\"Muy rica arepa\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Comentario creado\", () => pm.response.to.have.status(201));"
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "ORDERS — Crear orden",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/orders",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{user_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"items\":[{\"product_id\":{{created_product_id}},\"quantity\":1}]}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Orden creada\", () => pm.response.to.have.status(201));",
+              "pm.environment.set(\"created_order_id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "ORDERS — Pagar orden",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/orders/pay",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{user_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"order_id\":{{created_order_id}}}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Pago exitoso\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "ORDERS — Historial de usuario",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/orders",
+        "header": [{ "key": "Authorization", "value": "Bearer {{user_token}}" }]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Historial cargado\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
